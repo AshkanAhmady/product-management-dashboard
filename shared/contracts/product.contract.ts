@@ -31,13 +31,6 @@ export interface Product {
     createdAt: string;
 }
 
-export interface CheckSkuResponseData {
-    available: boolean;
-}
-
-export type CheckSkuResponse =
-    ApiResponse<CheckSkuResponseData>;
-
 export interface PaginationMeta {
     page: number;
     pageSize: number;
@@ -72,3 +65,17 @@ export interface CreateProductRequest {
 }
 
 export type CreateProductResponse = ApiResponse<Product>;
+
+export interface CheckSkuResponseData {
+    available: boolean;
+}
+
+export type CheckSkuResponse =
+    ApiResponse<CheckSkuResponseData>;
+
+export type UpdateProductRequest = Partial<CreateProductRequest>;
+
+export type UpdateProductResponse = ApiResponse<Product>;
+
+export type DeleteProductResponse =
+    ApiResponse<Product>;
