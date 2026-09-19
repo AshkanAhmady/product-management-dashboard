@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@contracts/*": ["./shared/contracts/*"],
+      "@server/*": ["./mock-server/*"]
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import express from "express";
-import type { ProductsResponse } from "../shared/contracts/product.contract.js";
-import { products } from "./data/products.js";
+import type { ProductsResponse } from "@contracts/product.contract.js";
+import { products } from "@server/data/products.js";
 
 const app = express();
 

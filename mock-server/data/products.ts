@@ -4,7 +4,7 @@ import {
     PRODUCT_CATEGORIES,
     PRODUCT_STATUSES,
     type Product,
-} from "../../shared/contracts/product.contract.js";
+} from "@contracts/product.contract.js";
 
 const PRODUCT_COUNT = 100_000;
 
