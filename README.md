@@ -1,75 +1,125 @@
-# React + TypeScript + Vite
+# Product Management Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A product management dashboard built with React and TypeScript that allows users to efficiently browse, search, filter, create, edit, and delete products.
 
-Currently, two official plugins are available:
+The project focuses on scalable data handling, efficient server-state synchronization, form validation, optimistic updates, and a maintainable frontend architecture.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+- React
+- TypeScript
+- Vite
+- TanStack Query
+- React Hook Form
+- Zod
+- React Router
+- Tailwind CSS
+- shadcn/ui
+- pnpm
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> Additional tooling and libraries will be documented as the project evolves.
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Make sure the following tools are installed:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 20 or later
+- pnpm 10 or later
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+The project is currently developed using:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js `v23.6.0`
+- pnpm `v10.33.0`
 
+## Getting Started
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+cd product-management-dashboard
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+pnpm install
 ```
+
+Start the development server:
+
+```bash
+pnpm dev
+```
+
+Then open the local URL displayed by Vite in your browser.
+
+## Available Scripts
+
+Start the development server:
+
+```bash
+pnpm dev
+```
+
+Create a production build:
+
+```bash
+pnpm build
+```
+
+Run ESLint:
+
+```bash
+pnpm lint
+```
+
+Preview the production build:
+
+```bash
+pnpm preview
+```
+
+## Core Features
+
+The dashboard is designed to support:
+
+- Product listing with efficient pagination
+- Large dataset handling
+- Debounced product search
+- Filtering by status and category
+- URL-synchronized filters and pagination
+- Product creation and editing
+- Strict form validation
+- Cross-field validation
+- Asynchronous SKU uniqueness validation
+- Optimistic edit and delete operations
+- Automatic rollback when mutations fail
+- Efficient server-state caching
+- Loading, error, empty, and mutation states
+- Responsive user interface
+
+## Architecture
+
+The application follows a feature-based architecture with a clear separation between:
+
+- Server state
+- URL state
+- Local UI state
+- API communication
+- Validation
+- Reusable UI components
+
+Detailed architectural decisions and trade-offs will be documented once the implementation is complete.
+
+## Testing
+
+Testing strategy and instructions will be documented after the test setup is finalized.
+
+## Architectural Decisions
+
+Detailed information about major architectural decisions, including data fetching, cache synchronization, URL state management, validation, and large dataset handling, will be added as the implementation progresses.
+
+## What I Would Improve With More Time
+
+Additional improvements and production considerations will be documented after the core requirements are complete.
