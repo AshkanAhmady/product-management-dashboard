@@ -1,3 +1,5 @@
+import type { ApiResponse } from "./api.contract.js";
+
 export const PRODUCT_CATEGORIES = [
     "Electronics",
     "Clothing",
@@ -29,6 +31,13 @@ export interface Product {
     createdAt: string;
 }
 
+export interface CheckSkuResponseData {
+    available: boolean;
+}
+
+export type CheckSkuResponse =
+    ApiResponse<CheckSkuResponseData>;
+
 export interface PaginationMeta {
     page: number;
     pageSize: number;
@@ -50,4 +59,16 @@ export interface GetProductsRequest {
 }
 
 export type ProductsResponse =
-    PaginatedResponse<Product>;
+    ApiResponse<PaginatedResponse<Product>>;
+
+export interface CreateProductRequest {
+    name: string;
+    sku: string;
+    category: ProductCategory;
+    status: ProductStatus;
+    price: number;
+    weight: number;
+    stock: number;
+}
+
+export type CreateProductResponse = ApiResponse<Product>;
