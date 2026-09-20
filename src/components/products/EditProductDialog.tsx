@@ -1,4 +1,4 @@
-import type { Product, ProductsResponse } from "@contracts/product.contract";
+import type { GetProductsRequest, Product, ProductsResponse } from "@contracts/product.contract";
 
 import {
     Dialog,
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useMutationRequest } from "@/hooks/reactQuery/useMutationRequest";
 import { updateProduct } from "@/services/productServices";
 import type { ProductFormValues } from "@/schemas/product.schema";
+import { productMatchesFilters } from "@/utils/productMatchesFilters";
 
 interface EditProductDialogProps {
     product: Product | null;
@@ -36,34 +37,93 @@ const EditProductDialog = ({ product, onOpenChange }: EditProductDialogProps) =>
                     queryKey: ["products"],
                 });
 
+                // Snapshot all currently cached product queries
+                // so we can restore them if PATCH fails.
                 const previousQueries =
                     queryClient.getQueriesData<ProductsResponse>({
                         queryKey: ["products"],
                     });
 
-                queryClient.setQueriesData<ProductsResponse>(
-                    {
-                        queryKey: ["products"],
-                    },
-                    (cachedData) => {
+                previousQueries.forEach(
+                    ([queryKey, cachedData]) => {
                         if (!cachedData?.data) {
-                            return cachedData;
+                            return;
                         }
 
-                        return {
-                            ...cachedData,
-                            data: {
-                                ...cachedData.data,
-                                items: cachedData.data.items.map((item) =>
-                                    item.id === id
-                                        ? {
-                                            ...item,
-                                            ...data,
-                                        }
-                                        : item,
-                                ),
-                            },
+                        const existingProduct =
+                            cachedData.data.items.find(
+                                (item) => item.id === id,
+                            );
+
+                        // This product is not present on this cached page.
+                        if (!existingProduct) {
+                            return;
+                        }
+
+                        const params =
+                            (queryKey[1] ?? {}) as GetProductsRequest;
+
+                        const updatedProduct: Product = {
+                            ...existingProduct,
+                            ...data,
                         };
+
+                        const stillMatchesFilters =
+                            productMatchesFilters(
+                                updatedProduct,
+                                params,
+                            );
+
+                        // Product still belongs to this cached result.
+                        if (stillMatchesFilters) {
+                            queryClient.setQueryData<ProductsResponse>(
+                                queryKey,
+                                {
+                                    ...cachedData,
+                                    data: {
+                                        ...cachedData.data,
+                                        items: cachedData.data.items.map(
+                                            (item) =>
+                                                item.id === id
+                                                    ? updatedProduct
+                                                    : item,
+                                        ),
+                                    },
+                                },
+                            );
+
+                            return;
+                        }
+
+                        // Product no longer matches this query's filters,
+                        // so remove it from this cached result.
+                        const total = Math.max(
+                            cachedData.data.pagination.total - 1,
+                            0,
+                        );
+
+                        queryClient.setQueryData<ProductsResponse>(
+                            queryKey,
+                            {
+                                ...cachedData,
+                                data: {
+                                    ...cachedData.data,
+
+                                    items: cachedData.data.items.filter(
+                                        (item) => item.id !== id,
+                                    ),
+
+                                    pagination: {
+                                        ...cachedData.data.pagination,
+                                        total,
+                                        totalPages: Math.ceil(
+                                            total /
+                                            cachedData.data.pagination.pageSize,
+                                        ),
+                                    },
+                                },
+                            },
+                        );
                     },
                 );
 
@@ -72,7 +132,12 @@ const EditProductDialog = ({ product, onOpenChange }: EditProductDialogProps) =>
                 };
             },
 
-            onError: (_error, _variables, context) => {
+            onError: (
+                _error,
+                _variables,
+                context,
+            ) => {
+                // Restore every cache snapshot modified in onMutate.
                 context?.previousQueries.forEach(
                     ([queryKey, previousData]) => {
                         queryClient.setQueryData(
@@ -82,7 +147,9 @@ const EditProductDialog = ({ product, onOpenChange }: EditProductDialogProps) =>
                     },
                 );
 
-                toast.error("Failed to update product");
+                toast.error(
+                    "Failed to update product",
+                );
             },
 
             onSuccess: (response) => {
@@ -101,21 +168,35 @@ const EditProductDialog = ({ product, onOpenChange }: EditProductDialogProps) =>
                             return cachedData;
                         }
 
+                        const productExists =
+                            cachedData.data.items.some(
+                                (item) =>
+                                    item.id === updatedProduct.id,
+                            );
+
+                        if (!productExists) {
+                            return cachedData;
+                        }
+
                         return {
                             ...cachedData,
                             data: {
                                 ...cachedData.data,
-                                items: cachedData.data.items.map((item) =>
-                                    item.id === updatedProduct.id
-                                        ? updatedProduct
-                                        : item,
+
+                                items: cachedData.data.items.map(
+                                    (item) =>
+                                        item.id === updatedProduct.id
+                                            ? updatedProduct
+                                            : item,
                                 ),
                             },
                         };
                     },
                 );
 
-                toast.success("Product updated successfully");
+                toast.success(
+                    "Product updated successfully",
+                );
 
                 onOpenChange(false);
             },
