@@ -23,7 +23,6 @@ export type CheckSkuService = (
 
 export type CreateProductService = (
     data: CreateProductRequest,
-    signal?: AbortSignal,
 ) => Promise<CreateProductResponse>;
 
 export type UpdateProductService = (
@@ -31,12 +30,10 @@ export type UpdateProductService = (
         id: string;
         data: UpdateProductRequest;
     },
-    signal?: AbortSignal,
 ) => Promise<UpdateProductResponse>;
 
 export type DeleteProductService = (
     variables: {
         id: string;
     },
-    signal?: AbortSignal,
 ) => Promise<DeleteProductResponse>;

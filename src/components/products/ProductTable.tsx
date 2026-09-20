@@ -9,10 +9,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MoreHorizontal, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ProductTableProps {
   products: Product[];
   isLoading?: boolean;
+  onEdit: (product: Product) => void;
 }
 
 const SKELETON_ROWS = 8;
@@ -20,6 +29,7 @@ const SKELETON_ROWS = 8;
 const ProductTable = ({
   products,
   isLoading = false,
+  onEdit
 }: ProductTableProps) => {
   return (
     <Table>
@@ -48,6 +58,9 @@ const ProductTable = ({
 
           <TableHead className="hidden xl:table-cell">
             Created At
+          </TableHead>
+          <TableHead className="w-12">
+            <span className="sr-only">Actions</span>
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -88,6 +101,10 @@ const ProductTable = ({
                 <TableCell className="hidden xl:table-cell">
                   <Skeleton className="h-4 w-24" />
                 </TableCell>
+                <TableCell>
+                  <Skeleton className="ml-auto size-8" />
+                </TableCell>
+
               </TableRow>
             ),
           )
@@ -128,6 +145,31 @@ const ProductTable = ({
                 {new Date(
                   product.createdAt,
                 ).toLocaleDateString()}
+              </TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Actions for ${product.name}`}
+                      >
+                        <MoreHorizontal className="size-4" />
+                      </Button>
+                    }
+                  />
+
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => onEdit(product)}
+                    >
+                      <Pencil className="size-4" />
+                      Edit
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}

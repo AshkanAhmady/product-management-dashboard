@@ -84,6 +84,15 @@ const ProductForm = ({
         400,
     );
 
+    const originalSku =
+        product?.sku.trim().toLowerCase();
+
+    const currentSku =
+        debouncedSku.toLowerCase();
+
+    const hasSkuChanged =
+        !product || currentSku !== originalSku;
+
     const {
         data: skuAvailability,
         isFetching: isCheckingSku,
@@ -92,7 +101,9 @@ const ProductForm = ({
         queryFn: checkSku,
         data: { sku: debouncedSku },
         options: {
-            enabled: debouncedSku.length >= 3,
+            enabled:
+                debouncedSku.length >= 3 &&
+                hasSkuChanged,
             retry: false,
         },
     });
@@ -101,6 +112,7 @@ const ProductForm = ({
 
     const isCurrentSku =
         normalizedSku === debouncedSku;
+
 
     useEffect(() => {
         if (

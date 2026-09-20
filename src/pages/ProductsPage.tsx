@@ -9,6 +9,8 @@ import ProductErrorState from "@/components/products/ProductErrorState";
 import ProductEmptyState from "@/components/products/ProductEmptyState";
 import ProductPagination from "@/components/products/ProductPagination";
 import AddProductDialog from "@/components/products/AddProductDialog";
+import type { Product } from "@contracts/product.contract";
+import EditProductDialog from "@/components/products/EditProductDialog";
 
 const ProductsPage = () => {
   const {
@@ -37,7 +39,8 @@ const ProductsPage = () => {
       placeholderData: (previousData) => previousData,
     },
   });
-
+  const [editingProduct, setEditingProduct] =
+    useState<Product | null>(null);
   const [searchValue, setSearchValue] = useState(
     () => params.search ?? "",
   );
@@ -77,7 +80,7 @@ const ProductsPage = () => {
   };
 
   return (
-    <main className="bg-muted/20 min-h-screen">
+    <><main className="bg-muted/20 min-h-screen">
       <div className="mx-auto max-w-360 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <header className="mb-8">
           <div>
@@ -133,6 +136,7 @@ const ProductsPage = () => {
                 <ProductTable
                   products={products}
                   isLoading={isLoading}
+                  onEdit={setEditingProduct}
                 />
 
                 {!isLoading && pagination && (
@@ -152,6 +156,14 @@ const ProductsPage = () => {
         </section>
       </div>
     </main>
+      <EditProductDialog
+        product={editingProduct}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingProduct(null);
+          }
+        }}
+      /></>
   );
 };
 

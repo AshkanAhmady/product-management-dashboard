@@ -30,25 +30,25 @@ export const checkSku: CheckSkuService = (params, signal) =>
         signal,
     });
 
-export const createProduct: CreateProductService = (data, signal) =>
+export const createProduct: CreateProductService = (data) =>
     apiCaller<CreateProductResponse, CreateProductRequest>(API_URLS.PRODUCTS.CREATE, {
         method: "POST",
         data,
-        signal,
     });
 
-export const updateProduct: UpdateProductService = ({ id, data }, signal) =>
+export const updateProduct: UpdateProductService = ({ id, data }) =>
     apiCaller<UpdateProductResponse, UpdateProductRequest>(API_URLS.PRODUCTS.UPDATE(id), {
         method: "PATCH",
         data,
-        signal,
+        headers: {
+            "x-mock-failure": "true",
+        },
     });
 
-export const deleteProduct: DeleteProductService = ({ id }, signal) =>
+export const deleteProduct: DeleteProductService = ({ id }) =>
     apiCaller<DeleteProductResponse>(
         API_URLS.PRODUCTS.DELETE(id),
         {
             method: "DELETE",
-            signal,
         },
     );
