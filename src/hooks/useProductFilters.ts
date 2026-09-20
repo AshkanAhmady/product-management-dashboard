@@ -4,7 +4,7 @@ import type {
     ProductCategory,
     ProductStatus,
 } from "@contracts/product.contract";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
@@ -13,27 +13,31 @@ export const useProductFilters = () => {
     const [searchParams, setSearchParams] =
         useSearchParams();
 
-    const rawPage = Number(searchParams.get("page"));
-    const rawPageSize = Number(
-        searchParams.get("pageSize"),
-    );
+    const pageParam = searchParams.get("page");
+    const pageSizeParam = searchParams.get("pageSize");
+
+    const rawPage = Number(pageParam);
+    const rawPageSize = Number(pageSizeParam);
+
+    const page =
+        Number.isInteger(rawPage) && rawPage > 0
+            ? rawPage
+            : DEFAULT_PAGE;
+
+    const pageSize =
+        Number.isInteger(rawPageSize) &&
+            rawPageSize > 0 &&
+            rawPageSize <= 100
+            ? rawPageSize
+            : DEFAULT_PAGE_SIZE;
 
     const search = searchParams.get("search")?.trim();
     const status = searchParams.get("status");
     const category = searchParams.get("category");
 
     const params: GetProductsRequest = {
-        page:
-            Number.isInteger(rawPage) && rawPage > 0
-                ? rawPage
-                : DEFAULT_PAGE,
-
-        pageSize:
-            Number.isInteger(rawPageSize) &&
-                rawPageSize > 0 &&
-                rawPageSize <= 100
-                ? rawPageSize
-                : DEFAULT_PAGE_SIZE,
+        page,
+        pageSize,
 
         ...(search && {
             search,
@@ -47,6 +51,52 @@ export const useProductFilters = () => {
             category: category as ProductCategory,
         }),
     };
+
+    useEffect(() => {
+        const isPageValid =
+            pageParam !== null &&
+            Number.isInteger(rawPage) &&
+            rawPage > 0;
+
+        const isPageSizeValid =
+            pageSizeParam !== null &&
+            Number.isInteger(rawPageSize) &&
+            rawPageSize > 0 &&
+            rawPageSize <= 100;
+
+        if (isPageValid && isPageSizeValid) {
+            return;
+        }
+
+        const nextParams = new URLSearchParams(
+            searchParams,
+        );
+
+        if (!isPageValid) {
+            nextParams.set(
+                "page",
+                String(DEFAULT_PAGE),
+            );
+        }
+
+        if (!isPageSizeValid) {
+            nextParams.set(
+                "pageSize",
+                String(DEFAULT_PAGE_SIZE),
+            );
+        }
+
+        setSearchParams(nextParams, {
+            replace: true,
+        });
+    }, [
+        pageParam,
+        pageSizeParam,
+        rawPage,
+        rawPageSize,
+        searchParams,
+        setSearchParams,
+    ]);
 
     const updateFilter = useCallback(
         (
@@ -72,22 +122,6 @@ export const useProductFilters = () => {
         [setSearchParams],
     );
 
-    const clearFilters = useCallback(() => {
-        setSearchParams((currentParams) => {
-            const nextParams = new URLSearchParams(
-                currentParams,
-            );
-
-            nextParams.delete("search");
-            nextParams.delete("status");
-            nextParams.delete("category");
-
-            nextParams.set("page", "1");
-
-            return nextParams;
-        });
-    }, [setSearchParams]);
-
     const setSearch = useCallback(
         (value: string) => {
             updateFilter("search", value);
@@ -109,11 +143,64 @@ export const useProductFilters = () => {
         [updateFilter],
     );
 
+    const setPage = useCallback(
+        (page: number) => {
+            setSearchParams((currentParams) => {
+                const nextParams = new URLSearchParams(
+                    currentParams,
+                );
+
+                nextParams.set("page", String(page));
+
+                return nextParams;
+            });
+        },
+        [setSearchParams],
+    );
+
+    const setPageSize = useCallback(
+        (pageSize: number) => {
+            setSearchParams((currentParams) => {
+                const nextParams = new URLSearchParams(
+                    currentParams,
+                );
+
+                nextParams.set(
+                    "pageSize",
+                    String(pageSize),
+                );
+
+                nextParams.set("page", "1");
+
+                return nextParams;
+            });
+        },
+        [setSearchParams],
+    );
+
+    const clearFilters = useCallback(() => {
+        setSearchParams((currentParams) => {
+            const nextParams = new URLSearchParams(
+                currentParams,
+            );
+
+            nextParams.delete("search");
+            nextParams.delete("status");
+            nextParams.delete("category");
+
+            nextParams.set("page", "1");
+
+            return nextParams;
+        });
+    }, [setSearchParams]);
+
     return {
         params,
         setSearch,
         setStatus,
         setCategory,
+        setPage,
+        setPageSize,
         clearFilters
     };
 };

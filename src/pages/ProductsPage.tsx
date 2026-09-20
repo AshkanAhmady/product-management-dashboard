@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProductErrorState from "@/components/products/ProductErrorState";
 import ProductEmptyState from "@/components/products/ProductEmptyState";
+import ProductPagination from "@/components/products/ProductPagination";
 
 const ProductsPage = () => {
   const {
@@ -14,6 +15,8 @@ const ProductsPage = () => {
     setSearch,
     setStatus,
     setCategory,
+    setPage,
+    setPageSize,
     clearFilters
   } = useProductFilters();
 
@@ -59,6 +62,7 @@ const ProductsPage = () => {
   ]);
 
   const products = data?.data?.items ?? [];
+  const pagination = data?.data?.pagination;
 
   const hasFilters = Boolean(
     params.search ||
@@ -120,7 +124,7 @@ const ProductsPage = () => {
               <div
                 className={
                   isPlaceholderData
-                    ? "opacity-50 transition-opacity duration-200"
+                    ? "opacity-75 transition-opacity duration-200"
                     : "opacity-100 transition-opacity duration-200"
                 }
               >
@@ -128,6 +132,18 @@ const ProductsPage = () => {
                   products={products}
                   isLoading={isLoading}
                 />
+
+                {!isLoading && pagination && (
+                  <ProductPagination
+                    page={pagination.page}
+                    pageSize={pagination.pageSize}
+                    total={pagination.total}
+                    totalPages={pagination.totalPages}
+                    onPageChange={setPage}
+                    onPageSizeChange={setPageSize}
+                    disabled={isPlaceholderData}
+                  />
+                )}
               </div>
             )}
           </div>
