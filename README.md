@@ -1,375 +1,606 @@
 # Product Management Dashboard
 
-A product management dashboard built with React and TypeScript.
+A scalable Product Management Dashboard built with React and TypeScript as a technical assessment project.
 
-The application provides product listing, searching, filtering,
-pagination, creation, editing, and deletion while focusing on scalable
-frontend architecture, efficient server-state management, form
-validation, and a responsive user experience.
+The application demonstrates server-side pagination, URL-synchronized filtering, form validation, asynchronous SKU validation, optimistic updates with rollback, and efficient server-state management using TanStack Query.
 
-The project also includes a local mock API server capable of handling a
-large product dataset and simulating real-world network behavior such as
-latency and request failures.
+The project includes a mock Express API containing **100,000 products** to simulate working with a large dataset.
 
-------------------------------------------------------------------------
+---
 
 ## Features
 
--   Product listing
--   Server-side pagination
--   Search by product name or SKU
--   Debounced search
--   Filter by product status and category
--   URL-persisted search, filter, and pagination state
--   Create, edit, and delete products
--   Form and cross-field validation
--   Asynchronous SKU uniqueness validation
--   Loading, error, and empty states
--   Optimistic updates for edit and delete operations
--   Rollback on mutation failure
--   Efficient server-state caching with TanStack Query
--   Large mock dataset with 100,000 products
--   Simulated API latency and controlled failures
+### Product Management
+
+- Display products in a paginated table
+- Create new products
+- Edit existing products
+- Delete products
+- Responsive product management UI
+
+### Search & Filtering
+
+- Debounced product search
+- Filter by product status
+- Filter by product category
+- Server-side filtering
+- Pagination and filters persisted in URL query parameters
+- Browser Back/Forward navigation support
+
+Example:
+
+```text
+/products?page=2&pageSize=20&search=iphone&status=active&category=Electronics
+```
+
+This makes the current product view shareable and restorable after a page refresh.
+
+### Form Validation
+
+Product forms are implemented using **React Hook Form** and **Zod**.
+
+Validation includes:
+
+- Required fields
+- Name and SKU length constraints
+- Non-negative price
+- Non-negative weight
+- Integer and non-negative stock
+- Category and status validation
+- Cross-field validation
+
+For example, Electronics products must have a weight greater than zero:
+
+```text
+category = Electronics
+→ weight > 0
+```
+
+### Asynchronous SKU Validation
+
+SKU availability is validated asynchronously against the mock API.
+
+The validation is debounced to avoid unnecessary API requests while the user is typing.
+
+The backend also validates SKU uniqueness during create/update operations to ensure data integrity.
+
+### Optimistic Updates
+
+Edit and Delete operations use optimistic cache updates.
+
+The UI updates immediately before the API request finishes.
+
+If the request fails:
+
+```text
+Optimistic update
+       ↓
+API request fails
+       ↓
+Previous cache restored
+       ↓
+Error feedback displayed
+```
+
+This provides a responsive user experience while maintaining consistency on failed mutations.
+
+### Loading & Error States
+
+The application includes:
+
+- Initial loading state
+- Background fetching indicator
+- Mutation loading states
+- API error states
+- Empty product states
+- Form submission feedback
+- Success and error notifications
+
+---
 
 ## Tech Stack
 
 ### Frontend
 
--   React
--   TypeScript
--   Vite
--   TanStack Query
--   React Router
--   React Hook Form
--   Zod
--   Axios
--   Tailwind CSS
--   shadcn/ui
+- React
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- React Hook Form
+- Zod
+- Axios
+- Tailwind CSS
+- shadcn/ui
 
-### Mock API
+### Mock Backend
 
--   Node.js
--   Express
--   TypeScript
--   Faker
--   Zod
+- Express
+- Faker
+- Zod
+- TypeScript
+- tsx
+
+### Testing
+
+- Vitest
 
 ### Package Manager
 
--   pnpm
+- pnpm
+
+---
 
 ## Getting Started
 
-### Requirements
+### Prerequisites
 
--   Node.js
--   pnpm
+Make sure the following tools are installed:
 
-### Install Dependencies
+```text
+Node.js
+pnpm
+```
 
-``` bash
+Install pnpm if necessary:
+
+```bash
+npm install -g pnpm
+```
+
+### Installation
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+cd product-management-dashboard
+```
+
+Install dependencies:
+
+```bash
 pnpm install
 ```
 
-## Running the Application
-
-The project contains two development processes: the frontend application
-and the mock API server.
-
-### Start the Mock API Server
-
-``` bash
-pnpm mock:server
-```
-
-The API server runs at:
-
-``` text
-http://localhost:3001
-```
-
-API base URL:
-
-``` text
-http://localhost:3001/api
-```
-
-### Start the Frontend
-
-Open another terminal and run:
-
-``` bash
-pnpm dev
-```
-
-Vite will display the local development URL in the terminal.
-
-## Environment Variables
+### Environment Variables
 
 Create a `.env` file in the project root:
 
-``` env
+```env
 VITE_API_BASE_URL=http://localhost:3001/api
 ```
 
+### Run the Mock API
+
+Start the mock backend:
+
+```bash
+pnpm mock:server
+```
+
+The API runs on:
+
+```text
+http://localhost:3001
+```
+
+### Run the Frontend
+
+In another terminal:
+
+```bash
+pnpm dev
+```
+
+Open the URL displayed by Vite in your browser.
+
+---
+
+## Available Scripts
+
+Start the frontend development server:
+
+```bash
+pnpm dev
+```
+
+Start the mock API:
+
+```bash
+pnpm mock:server
+```
+
+Run tests in watch mode:
+
+```bash
+pnpm test
+```
+
+Run all tests once:
+
+```bash
+pnpm test:run
+```
+
+Run ESLint:
+
+```bash
+pnpm lint
+```
+
+Create a production build:
+
+```bash
+pnpm build
+```
+
+Run TypeScript validation:
+
+```bash
+pnpm exec tsc --noEmit
+```
+
+---
+
 ## Project Structure
 
-The frontend uses a lightweight layer-based architecture.
+The application follows a layer-based architecture.
 
-``` text
-src/
-├── api/
-│   ├── http.ts
-│   └── apiCaller.ts
-├── app/
-│   └── providers/
-│       └── QueryProvider.tsx
-├── components/
-│   ├── products/
-│   └── ui/
-├── hooks/
-│   ├── reactQuery/
-│   │   ├── useQueryRequest.ts
-│   │   └── useMutationRequest.ts
-│   └── ...
-├── pages/
-│   └── Products/
-├── schemas/
-│   └── product.schema.ts
-├── services/
-│   └── productServices.ts
-├── App.tsx
-└── main.tsx
+```text
+product-management-dashboard/
+│
+├── mock-server/
+│   ├── controllers/
+│   │   └── products/
+│   ├── data/
+│   ├── middlewares/
+│   ├── routes/
+│   ├── schemas/
+│   ├── utils/
+│   └── server.ts
+│
+├── shared/
+│   └── contracts/
+│       ├── api.contract.ts
+│       └── product.contract.ts
+│
+├── src/
+│   ├── api/
+│   ├── app/
+│   ├── assets/
+│   ├── components/
+│   ├── constants/
+│   ├── hooks/
+│   ├── pages/
+│   ├── schemas/
+│   ├── services/
+│   └── utils/
+│
+├── .env
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
 
-The mock backend is kept separately:
+### Architecture Rationale
 
-``` text
-mock-server/
-├── controllers/
-│   └── products/
-├── data/
-├── middlewares/
-├── routes/
-├── schemas/
-├── utils/
-└── server.ts
-```
+A layer-based structure was chosen because the application currently focuses on a single primary domain: products.
 
-Shared API contracts are located outside both applications:
+Introducing a more complex feature-based architecture at this size would add unnecessary abstraction.
 
-``` text
-shared/
-└── contracts/
-    ├── api.contract.ts
-    └── product.contract.ts
-```
+As the application grows and additional business domains are introduced, the project could be migrated toward a feature-oriented structure.
 
-This allows the frontend and mock backend to share TypeScript contracts
-without duplicating API models.
+---
 
-## Architecture Decisions
+# Technical Decisions
 
-### Layer-Based Frontend Architecture
+## Server-Side Pagination
 
-The frontend intentionally uses a lightweight layer-based structure
-instead of introducing a feature-based architecture.
+The mock backend generates **100,000 products**.
 
-The dashboard currently focuses on one primary business domain:
-products. Introducing a `features/products` hierarchy would add
-unnecessary nesting at the current project scale.
+The complete dataset is never transferred to the browser.
 
-Responsibilities are instead separated into explicit layers:
+Instead, the frontend requests only the required page:
 
-``` text
-api/
-services/
-hooks/
-components/
-pages/
-schemas/
-```
-
-If additional domains such as users, orders, customers, or reports are
-introduced, the application can be migrated toward feature-based
-organization.
-
-## API Architecture
-
-API communication follows this flow:
-
-``` text
-Component
-    ↓
-useQueryRequest / useMutationRequest
-    ↓
-Service
-    ↓
-apiCaller
-    ↓
-Axios Instance
-    ↓
-API
-```
-
-### Axios Instance
-
-The Axios instance contains shared HTTP configuration such as the base
-URL, common headers, and common request behavior.
-
-### apiCaller
-
-`apiCaller` provides a reusable abstraction over the HTTP client and
-prevents individual services from duplicating Axios-specific request
-logic.
-
-### Services
-
-Services represent backend operations such as:
-
-``` text
-getProducts
-createProduct
-updateProduct
-deleteProduct
-checkSku
-```
-
-Components therefore do not communicate with Axios or the backend
-directly.
-
-### React Query Hooks
-
-Reusable wrappers around TanStack Query are provided through
-`useQueryRequest` and `useMutationRequest`.
-
-These wrappers remain intentionally lightweight so important TanStack
-Query behavior such as query keys, caching, optimistic updates, and
-rollback remains explicit.
-
-## Server State Management
-
-TanStack Query is used for asynchronous server state, including:
-
--   Request lifecycle management
--   Loading and error states
--   Server-state caching
--   Query invalidation
--   Mutation handling
--   Optimistic updates
--   Rollback
-
-Local UI state is kept separate from server state.
-
-## URL State
-
-Search, filtering, and pagination state is persisted in URL query
-parameters.
-
-Example:
-
-``` text
-/products?page=2&pageSize=20&search=iphone&status=active&category=Electronics
-```
-
-This makes dashboard state bookmarkable, shareable, persistent across
-refreshes, and compatible with browser back/forward navigation.
-
-The URL acts as the source of truth for product-list query state.
-
-## Product List Strategy
-
-The mock API contains 100,000 products. The frontend does not download
-the complete dataset.
-
-Instead, pagination, search, and filtering are processed by the server.
-
-Example:
-
-``` http
+```text
 GET /api/products?page=1&pageSize=20
 ```
 
-Only the requested page is transferred to and rendered by the browser.
-This avoids unnecessary network transfer, browser memory consumption,
-client-side filtering cost, and DOM rendering cost.
+Search and filtering are also performed by the server before pagination.
 
-Because only a small page of records is rendered at a time, table
-virtualization is not necessary for the current implementation.
+This keeps:
 
-## Search and Filtering
+- Network payloads small
+- Browser memory usage low
+- Table rendering efficient
+- UI performance predictable
 
-Products can be searched by product name or SKU and filtered by status
-and category.
+### Why Table Virtualization Was Not Used
 
-Search input is debounced to prevent an API request from being triggered
-for every individual keystroke. Changing search or filter criteria
-resets pagination when appropriate.
+Virtualization is primarily useful when a large number of DOM rows must exist on the client.
 
-## Form Validation
+In this application, server-side pagination means the browser only receives and renders a small number of products at a time.
 
-Product forms use React Hook Form and Zod.
+For example:
 
-Validation includes:
-
--   Required fields
--   Minimum and maximum lengths
--   Numeric constraints
--   Integer stock validation
--   Category validation
--   Status validation
--   Cross-field business rules
-
-For example, when the category is `Electronics`, weight must be greater
-than zero.
-
-The same business rule is validated by the mock API so backend integrity
-does not depend solely on frontend validation.
-
-## Async SKU Validation
-
-SKU uniqueness is checked asynchronously before product submission:
-
-``` http
-GET /api/products/check-sku?sku=SKU-001
+```text
+100,000 products on server
+          ↓
+Server-side pagination
+          ↓
+20 products transferred
+          ↓
+~20 table rows rendered
 ```
 
-The create/update API also performs its own SKU uniqueness validation.
+Therefore, virtualization would introduce additional complexity without solving a meaningful bottleneck in the current architecture.
 
-Frontend asynchronous validation improves user experience, while
-server-side validation remains the final source of truth and protects
-against race conditions.
+---
 
-## Optimistic Updates
+## URL as the Source of Truth
 
-Edit and delete operations use optimistic UI updates.
+Product list state is persisted in URL query parameters.
 
-``` text
-User Action
-    ↓
-Update Cached UI Immediately
-    ↓
-Send API Request
-    ↓
-Success ──────→ Keep Updated Cache
-    │
-    └ Failure → Roll Back Previous Cache
+This includes:
+
+- Page
+- Page size
+- Search
+- Status
+- Category
+
+For example:
+
+```text
+/products?page=3&pageSize=50&status=active&category=Electronics&search=phone
 ```
 
-TanStack Query cache APIs are used to update the affected cached data
-instead of unnecessarily refetching the entire product list.
+This provides several advantages:
+
+- State survives browser refresh
+- Views can be bookmarked
+- Views can be shared
+- Browser Back/Forward navigation works correctly
+- Product queries can be derived directly from URL state
+
+Invalid pagination values are normalized before being used by the application.
+
+---
+
+## Data Fetching & Cache Strategy
+
+TanStack Query is responsible for server-state management.
+
+Product queries use their request parameters as part of the query key:
+
+```ts
+["products", params];
+```
+
+As a result, different combinations of:
+
+```text
+page
+pageSize
+search
+status
+category
+```
+
+receive independent cache entries.
+
+This allows previously visited product views to be reused efficiently.
+
+---
+
+## Create Cache Strategy
+
+Creating a product can affect:
+
+- Total product count
+- Page count
+- Product ordering
+- Search results
+- Filter results
+
+Because the correct position of a newly created product is determined by the server-side dataset, the product list is invalidated after a successful creation.
+
+This prioritizes correctness over manually inserting a product into potentially many paginated cache entries.
+
+---
+
+## Edit Cache Strategy
+
+Product editing uses an optimistic update.
+
+Before sending the request:
+
+1. Active product queries are cancelled.
+2. Existing product query caches are snapshotted.
+3. The edited product is updated immediately in relevant caches.
+4. The API request is sent.
+
+The optimistic update is filter-aware.
+
+For example, when viewing:
+
+```text
+status=active
+```
+
+and a product changes:
+
+```text
+active → inactive
+```
+
+the product is immediately removed from the Active result set.
+
+The same behavior applies to category and search filters.
+
+If the request fails, all modified caches are restored from the snapshot.
+
+When the request succeeds, the optimistic value is reconciled with the authoritative product returned by the API.
+
+---
+
+## Delete Cache Strategy
+
+Deletion is also optimistic.
+
+The product is immediately removed from relevant cached data and pagination metadata is adjusted.
+
+If the API request fails, previous query data is restored.
+
+This avoids waiting for a complete list refetch before updating the UI.
+
+---
+
+## Paginated Cache Considerations
+
+The application intentionally does not insert an edited product into cached pages where that product did not previously exist.
+
+With server-side pagination, the frontend cannot reliably determine the correct page and position for that product without reproducing server-side ordering and pagination logic.
+
+For example:
+
+```text
+Active → Inactive
+```
+
+The product can safely be removed from the cached Active page.
+
+However, automatically inserting it into an already cached Inactive page could place it in an incorrect position.
+
+The server remains the authority for page membership and ordering.
+
+---
+
+## API Layer
+
+HTTP infrastructure is separated from domain-specific services.
+
+The request flow is:
+
+```text
+Component
+   ↓
+TanStack Query Hook
+   ↓
+Product Service
+   ↓
+API Caller
+   ↓
+Axios
+   ↓
+Mock API
+```
+
+This keeps components independent from low-level HTTP configuration and allows API behavior to be maintained centrally.
+
+API errors are normalized before reaching UI components.
+
+---
+
+## Shared Contracts
+
+Frontend and mock backend share TypeScript contracts through:
+
+```text
+shared/contracts
+```
+
+These contracts define:
+
+- Product models
+- API responses
+- Pagination metadata
+- Request payloads
+- Response payloads
+
+This reduces accidental type inconsistencies between the frontend and mock API.
+
+---
+
+## Form Architecture
+
+Forms use:
+
+```text
+React Hook Form
+        +
+       Zod
+```
+
+React Hook Form manages form state efficiently while Zod provides declarative schema validation.
+
+Business validation rules remain outside UI components, making them easier to understand and test.
+
+---
+
+## SKU Uniqueness
+
+SKU validation happens at two levels.
+
+### Client-Side
+
+The frontend performs a debounced asynchronous availability check:
+
+```text
+User enters SKU
+      ↓
+Debounce
+      ↓
+GET /api/products/check-sku
+      ↓
+Availability feedback
+```
+
+For Edit operations, the availability request is skipped when the SKU has not changed.
+
+### Server-Side
+
+The backend validates SKU uniqueness again during mutations.
+
+This is required because client-side validation alone cannot guarantee uniqueness between the availability check and the final mutation.
+
+The backend therefore remains the final authority for data integrity.
+
+---
+
+# Mock API
+
+The Express mock API simulates a more realistic backend environment.
+
+It includes:
+
+- 100,000 generated products
+- Server-side pagination
+- Search
+- Category filtering
+- Status filtering
+- Product creation
+- Product editing
+- Product deletion
+- SKU uniqueness validation
+- Request latency simulation
+- Failure simulation support
+- Unified API error responses
+
+---
 
 ## API Endpoints
 
 ### Get Products
 
-``` http
+```http
 GET /api/products
 ```
 
 Supported query parameters:
 
-``` text
+```text
 page
 pageSize
 search
@@ -379,212 +610,174 @@ category
 
 Example:
 
-``` http
-GET /api/products?page=1&pageSize=20&search=phone&status=active&category=Electronics
+```http
+GET /api/products?page=1&pageSize=20&search=iphone&status=active
 ```
 
 ### Check SKU Availability
 
-``` http
-GET /api/products/check-sku?sku=SKU-001
+```http
+GET /api/products/check-sku
+```
+
+Example:
+
+```text
+/api/products/check-sku?sku=SKU-123
 ```
 
 ### Create Product
 
-``` http
+```http
 POST /api/products
-```
-
-Example body:
-
-``` json
-{
-  "name": "MacBook Pro M4",
-  "sku": "MBP-M4-001",
-  "category": "Electronics",
-  "status": "active",
-  "price": 2499,
-  "weight": 1.6,
-  "stock": 25
-}
 ```
 
 ### Update Product
 
-``` http
+```http
 PATCH /api/products/:id
 ```
 
-Partial updates are supported.
-
 ### Delete Product
 
-``` http
+```http
 DELETE /api/products/:id
 ```
 
-## Mock API Behavior
+---
 
-The mock server intentionally simulates some characteristics of a real
-backend.
+# Error Handling
 
-### Network Latency
+API errors follow a consistent response structure.
 
-Requests include artificial latency so frontend loading behavior can be
-observed during development.
+Expected failures such as:
 
-### Controlled Mutation Failures
+- Invalid query parameters
+- Invalid product data
+- Duplicate SKU
+- Product not found
+- Invalid JSON
 
-Mutation requests can intentionally be failed using:
+are handled by the mock backend and returned using appropriate HTTP status codes.
 
-``` http
-x-mock-failure: true
+Unexpected server errors are handled by a global Express error handler.
+
+The frontend converts API failures into normalized errors before displaying feedback to the user.
+
+---
+
+# Testing
+
+Unit tests are implemented with Vitest.
+
+The tests focus on business rules and deterministic logic rather than implementation details.
+
+Current test coverage includes product validation rules such as:
+
+- Valid product input
+- Electronics weight requirement
+- Non-Electronics zero weight
+- Negative price rejection
+- Invalid stock values
+- SKU length validation
+
+Filter matching logic is also tested, including:
+
+- Status matching
+- Category matching
+- Case-insensitive name search
+- Case-insensitive SKU search
+- Multiple filter conditions
+
+Run the tests with:
+
+```bash
+pnpm test:run
 ```
 
-This can be used with POST, PATCH, and DELETE requests. The server
-responds with `500 Internal Server Error`, allowing optimistic-update
-rollback and frontend error handling to be tested reproducibly.
+---
 
-## API Response Format
+# Performance Considerations
 
-Successful and failed API responses use a consistent structure.
+Several decisions were made specifically with scalability in mind.
 
-Successful response:
+### Large Dataset
 
-``` json
-{
-  "data": {},
-  "message": "Request completed successfully"
-}
-```
+The backend contains 100,000 products, but only one page is sent to the frontend at a time.
 
-Error response:
+### Search
 
-``` json
-{
-  "data": null,
-  "message": "Something went wrong"
-}
-```
+Search input is debounced to reduce unnecessary requests.
 
-Shared TypeScript contracts are used by both the frontend and mock API.
+### Query Caching
 
-## Design System
+Product requests are cached by their query parameters.
 
-The frontend uses Tailwind CSS and shadcn/ui.
+### Background Fetching
 
-The goal is to maintain a small and consistent UI system without
-introducing a large component framework.
+Previously available data can remain visible while a new page is being fetched, reducing UI flicker.
 
-Reusable UI primitives are kept separate from product-specific
-components:
+### Rendering
 
-``` text
-components/
-├── ui/
-│   └── reusable UI primitives
-└── products/
-    └── product-specific components
-```
+Because pagination limits the number of rows rendered simultaneously, the browser does not need to create thousands of table elements.
 
-The design system maintains consistency across typography, spacing, form
-controls, buttons, tables, dialogs, feedback states, loading states, and
-error states.
+---
 
-Product-specific business logic is not placed inside generic UI
-components.
+# Trade-offs & Known Limitations
 
-## Error Handling
+This project was implemented as a focused technical assessment, so several decisions intentionally favor clarity and correctness over additional infrastructure.
 
-Errors flow through clearly separated boundaries:
+### Mock Persistence
 
-``` text
-Mock API
-   ↓
-Consistent API Error Response
-   ↓
-apiCaller
-   ↓
-React Query
-   ↓
-UI Feedback
-```
+Products are stored in memory by the mock server.
 
-The mock API also includes a global Express error handler for unexpected
-errors and malformed JSON requests.
+Restarting the server regenerates the dataset.
 
-## Loading and Empty States
+A production implementation would use persistent storage such as a database.
 
-The UI explicitly handles:
+### Optimistic Pagination
 
--   Initial loading
--   Background fetching
--   Mutation pending states
--   Errors
--   Empty search results
--   Empty filtered results
+Optimistic updates modify products already present in cached pages but intentionally avoid guessing the correct insertion position in other server-paginated caches.
 
-## Development Principles
+### Testing Scope
 
-The project intentionally favors:
+The current automated tests focus on unit-level business logic.
 
--   Clear separation of concerns
--   Type safety
--   Explicit data flow
--   Small reusable abstractions
--   Predictable server-state management
--   Reproducible error handling
--   Minimal unnecessary complexity
+A production application would additionally benefit from integration and end-to-end tests covering complete user flows.
 
-Abstractions are introduced only where they reduce meaningful
-duplication or improve maintainability.
+### Mock API
 
-## Possible Improvements
+The Express server exists to simulate realistic API behavior for the assessment and is not intended to represent a production backend architecture.
 
-Given additional production requirements and development time, possible
-improvements include:
+---
 
--   Unit tests
--   Integration tests
--   End-to-end tests
--   Accessibility audit
--   CI pipeline
--   Automated lint/type checks
--   Authentication and authorization
--   More advanced observability and logging
--   Production backend/database integration
--   More granular cache normalization
--   Internationalization
--   Expanded responsive/mobile UX
+# Future Improvements
 
-## Scripts
+Given additional development time, the following improvements would be considered:
 
-Install dependencies:
+- Integration tests for API and React Query interactions
+- End-to-end tests for product CRUD flows
+- Expanded accessibility testing
+- Persistent database storage
+- More advanced table sorting
+- Server-driven sorting
+- More comprehensive error recovery
+- Cache mutation logic extracted into dedicated reusable hooks/utilities
+- Improved observability and logging
+- Additional responsive UI refinements
+- Dark mode support
 
-``` bash
-pnpm install
-```
+---
 
-Run frontend:
+# Production Verification
 
-``` bash
-pnpm dev
-```
+Before delivery, the project can be verified with:
 
-Run mock API:
-
-``` bash
-pnpm mock:server
-```
-
-Run lint:
-
-``` bash
+```bash
+pnpm test:run
 pnpm lint
-```
-
-Build frontend:
-
-``` bash
+pnpm exec tsc --noEmit
 pnpm build
 ```
+
+All checks should complete successfully before submission.
