@@ -1,9 +1,10 @@
 import { Suspense, type ComponentType } from "react";
 import { routeList } from "@/constants/routeList";
+import PageLoader from "@/components/common/PageLoader";
 
 const createRouteElement = (Element: ComponentType) => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageLoader />}>
       <Element />
     </Suspense>
   );
