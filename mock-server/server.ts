@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import { productsRouter } from "@server/routes/products.js";
 import { errorHandler } from "./middlewares/errorHandler.ts";
@@ -7,6 +8,12 @@ import { mockFailure } from "./middlewares/mockFailure.ts";
 const app = express();
 
 const PORT = 3001;
+
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+    }),
+);
 
 app.use(express.json());
 
