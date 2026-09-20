@@ -1,5 +1,4 @@
 import {
-    Plus,
     Search,
     X,
 } from "lucide-react";
@@ -33,6 +32,7 @@ interface ProductToolbarProps {
         value?: ProductCategory,
     ) => void;
     onClearFilters: () => void;
+    actions?: React.ReactNode;
 }
 
 const ProductToolbar = ({
@@ -43,7 +43,8 @@ const ProductToolbar = ({
     onSearchChange,
     onStatusChange,
     onCategoryChange,
-    onClearFilters
+    onClearFilters,
+    actions
 }: ProductToolbarProps) => {
 
     return (
@@ -129,13 +130,7 @@ const ProductToolbar = ({
                 </Button>
             )}
 
-            <Button
-                type="button"
-                className="h-10 gap-2"
-            >
-                <Plus className="size-4" />
-                Add product
-            </Button>
+            {actions}
         </div>
     );
 };

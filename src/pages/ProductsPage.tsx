@@ -8,6 +8,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import ProductErrorState from "@/components/products/ProductErrorState";
 import ProductEmptyState from "@/components/products/ProductEmptyState";
 import ProductPagination from "@/components/products/ProductPagination";
+import AddProductDialog from "@/components/products/AddProductDialog";
 
 const ProductsPage = () => {
   const {
@@ -100,6 +101,7 @@ const ProductsPage = () => {
             onStatusChange={setStatus}
             onCategoryChange={setCategory}
             onClearFilters={handleClearFilters}
+            actions={<AddProductDialog />}
           />
 
           <div className="bg-card relative overflow-hidden rounded-xl border">

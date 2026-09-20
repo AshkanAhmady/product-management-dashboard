@@ -10,7 +10,10 @@ type UseMutationRequestParams<
     TVariables,
     TContext,
 > = {
-    mutationFn: (variables: TVariables) => Promise<TData>;
+    mutationFn: (
+        variables: TVariables,
+    ) => Promise<TData>;
+
     options?: Omit<
         UseMutationOptions<
             TData,
@@ -48,6 +51,8 @@ export function useMutationRequest<
         TContext
     >({
         ...options,
-        mutationFn,
+
+        mutationFn: (variables) =>
+            mutationFn(variables),
     });
 }
