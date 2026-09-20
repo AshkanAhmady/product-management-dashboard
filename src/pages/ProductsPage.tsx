@@ -1,14 +1,14 @@
+import { useProductFilters } from "@/hooks/useProductFilters";
 import { useQueryRequest } from "@/hooks/reactQuery/useQueryRequest";
 import { getProducts } from "@/services/productServices";
 
 const ProductsPage = () => {
+  const params = useProductFilters();
+
   const { data, isLoading, isError, error } = useQueryRequest({
-    queryKey: ["products"],
+    queryKey: ["products", params],
     queryFn: getProducts,
-    data: {
-      page: 1,
-      pageSize: 20,
-    },
+    data: params,
   });
 
   if (isLoading) {
