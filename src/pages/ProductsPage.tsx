@@ -15,6 +15,7 @@ import DeleteProductDialog from "@/components/products/DeleteProductDialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMutationRequest } from "@/hooks/reactQuery/useMutationRequest";
 import { toast } from "sonner";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const ProductsPage = () => {
   const {
@@ -179,7 +180,7 @@ const ProductsPage = () => {
   return (
     <><main className="bg-muted/20 min-h-screen">
       <div className="mx-auto max-w-360 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <header className="mb-8">
+        <header className="mb-8 flex justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               Product Management
@@ -188,6 +189,9 @@ const ProductsPage = () => {
             <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               Manage and organize your product catalog.
             </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
           </div>
         </header>
 

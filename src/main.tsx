@@ -5,14 +5,17 @@ import App from "@/App";
 import { QueryProvider } from "@/app/providers/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import "./index.css";
+import { ThemeProvider } from "@/app/providers/ThemeProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <QueryProvider>
-        <App />
-        <Toaster richColors position="top-right" />
-      </QueryProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <QueryProvider>
+          <App />
+          <Toaster richColors position="top-right" />
+        </QueryProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 );

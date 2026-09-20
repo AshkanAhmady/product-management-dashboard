@@ -15,7 +15,7 @@ export type GetProductsService = (
 ) => Promise<ProductsResponse>;
 
 export type CheckSkuService = (
-    params: {
+    params?: {
         sku: string;
     },
     signal?: AbortSignal,

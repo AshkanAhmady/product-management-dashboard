@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 interface ProductTableProps {
   products: Product[];
@@ -128,7 +129,16 @@ const ProductTable = ({
               </TableCell>
 
               <TableCell>
-                {product.status}
+                <Badge
+                  variant={
+                    product.status === "active"
+                      ? "default"
+                      : "secondary"
+                  }
+                  className="capitalize"
+                >
+                  {product.status}
+                </Badge>
               </TableCell>
 
               <TableCell className="hidden sm:table-cell">
@@ -136,7 +146,7 @@ const ProductTable = ({
               </TableCell>
 
               <TableCell className="hidden lg:table-cell">
-                {product.weight}
+                {product.weight.toLocaleString()} kg
               </TableCell>
 
               <TableCell className="hidden md:table-cell">
