@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreHorizontal, Pencil } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +22,7 @@ interface ProductTableProps {
   products: Product[];
   isLoading?: boolean;
   onEdit: (product: Product) => void;
+  onDelete: (product: Product) => void;
 }
 
 const SKELETON_ROWS = 8;
@@ -29,7 +30,8 @@ const SKELETON_ROWS = 8;
 const ProductTable = ({
   products,
   isLoading = false,
-  onEdit
+  onEdit,
+  onDelete
 }: ProductTableProps) => {
   return (
     <Table>
@@ -167,6 +169,13 @@ const ProductTable = ({
                     >
                       <Pencil className="size-4" />
                       Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => onDelete(product)}
+                    >
+                      <Trash2 className="size-4" />
+                      Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

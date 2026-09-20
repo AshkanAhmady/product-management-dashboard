@@ -1,7 +1,7 @@
 import ProductTable from "@/components/products/ProductTable";
 import { useProductFilters } from "@/hooks/useProductFilters";
 import { useQueryRequest } from "@/hooks/reactQuery/useQueryRequest";
-import { getProducts } from "@/services/productServices";
+import { deleteProduct, getProducts } from "@/services/productServices";
 import ProductToolbar from "@/components/products/ProductToolbar";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -9,8 +9,12 @@ import ProductErrorState from "@/components/products/ProductErrorState";
 import ProductEmptyState from "@/components/products/ProductEmptyState";
 import ProductPagination from "@/components/products/ProductPagination";
 import AddProductDialog from "@/components/products/AddProductDialog";
-import type { Product } from "@contracts/product.contract";
+import type { Product, ProductsResponse } from "@contracts/product.contract";
 import EditProductDialog from "@/components/products/EditProductDialog";
+import DeleteProductDialog from "@/components/products/DeleteProductDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMutationRequest } from "@/hooks/reactQuery/useMutationRequest";
+import { toast } from "sonner";
 
 const ProductsPage = () => {
   const {
@@ -22,6 +26,16 @@ const ProductsPage = () => {
     setPageSize,
     clearFilters
   } = useProductFilters();
+
+  const [editingProduct, setEditingProduct] =
+    useState<Product | null>(null);
+
+  const [deletingProduct, setDeletingProduct] =
+    useState<Product | null>(null);
+
+  const [searchValue, setSearchValue] = useState(
+    () => params.search ?? "",
+  );
 
   const {
     data,
@@ -39,11 +53,94 @@ const ProductsPage = () => {
       placeholderData: (previousData) => previousData,
     },
   });
-  const [editingProduct, setEditingProduct] =
-    useState<Product | null>(null);
-  const [searchValue, setSearchValue] = useState(
-    () => params.search ?? "",
-  );
+
+  const queryClient = useQueryClient();
+
+  const {
+    mutateAsync: mutateDeleteProduct,
+    isPending: isDeleting,
+  } = useMutationRequest({
+    mutationFn: deleteProduct,
+
+    options: {
+      onMutate: async (product) => {
+        await queryClient.cancelQueries({
+          queryKey: ["products"],
+        });
+
+        const previousQueries =
+          queryClient.getQueriesData<ProductsResponse>({
+            queryKey: ["products"],
+          });
+
+        queryClient.setQueriesData<ProductsResponse>(
+          {
+            queryKey: ["products"],
+          },
+          (cachedData) => {
+            if (!cachedData?.data) {
+              return cachedData;
+            }
+
+            const exists = cachedData.data.items.some(
+              (item) => item.id === product.id,
+            );
+
+            if (!exists) {
+              return cachedData;
+            }
+
+            const total = Math.max(
+              cachedData.data.pagination.total - 1,
+              0,
+            );
+
+            return {
+              ...cachedData,
+              data: {
+                ...cachedData.data,
+
+                items: cachedData.data.items.filter(
+                  (item) => item.id !== product.id,
+                ),
+
+                pagination: {
+                  ...cachedData.data.pagination,
+                  total,
+                  totalPages: Math.ceil(
+                    total /
+                    cachedData.data.pagination.pageSize,
+                  ),
+                },
+              },
+            };
+          },
+        );
+
+        return {
+          previousQueries,
+        };
+      },
+
+      onError: (_error, _productId, context) => {
+        context?.previousQueries.forEach(
+          ([queryKey, previousData]) => {
+            queryClient.setQueryData(
+              queryKey,
+              previousData,
+            );
+          },
+        );
+
+        toast.error("Failed to delete product");
+      },
+
+      onSuccess: () => {
+        toast.success("Product deleted successfully");
+        setDeletingProduct(null);
+      },
+    },
+  });
 
   const debouncedSearch = useDebounce(
     searchValue,
@@ -137,6 +234,7 @@ const ProductsPage = () => {
                   products={products}
                   isLoading={isLoading}
                   onEdit={setEditingProduct}
+                  onDelete={setDeletingProduct}
                 />
 
                 {!isLoading && pagination && (
@@ -163,7 +261,22 @@ const ProductsPage = () => {
             setEditingProduct(null);
           }
         }}
-      /></>
+      />
+      <DeleteProductDialog
+        product={deletingProduct}
+        isDeleting={isDeleting}
+        onConfirm={(productId) => {
+          void mutateDeleteProduct({ id: productId }).catch(() => {
+            // handled by onError
+          });
+        }}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting) {
+            setDeletingProduct(null);
+          }
+        }}
+      />
+    </>
   );
 };
 

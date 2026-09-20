@@ -45,16 +45,16 @@ const EditProductDialog = ({ product, onOpenChange }: EditProductDialogProps) =>
                     {
                         queryKey: ["products"],
                     },
-                    (oldData) => {
-                        if (!oldData?.data) {
-                            return oldData;
+                    (cachedData) => {
+                        if (!cachedData?.data) {
+                            return cachedData;
                         }
 
                         return {
-                            ...oldData,
+                            ...cachedData,
                             data: {
-                                ...oldData.data,
-                                items: oldData.data.items.map((item) =>
+                                ...cachedData.data,
+                                items: cachedData.data.items.map((item) =>
                                     item.id === id
                                         ? {
                                             ...item,
@@ -96,16 +96,16 @@ const EditProductDialog = ({ product, onOpenChange }: EditProductDialogProps) =>
                     {
                         queryKey: ["products"],
                     },
-                    (oldData) => {
-                        if (!oldData?.data) {
-                            return oldData;
+                    (cachedData) => {
+                        if (!cachedData?.data) {
+                            return cachedData;
                         }
 
                         return {
-                            ...oldData,
+                            ...cachedData,
                             data: {
-                                ...oldData.data,
-                                items: oldData.data.items.map((item) =>
+                                ...cachedData.data,
+                                items: cachedData.data.items.map((item) =>
                                     item.id === updatedProduct.id
                                         ? updatedProduct
                                         : item,

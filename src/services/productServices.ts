@@ -40,9 +40,9 @@ export const updateProduct: UpdateProductService = ({ id, data }) =>
     apiCaller<UpdateProductResponse, UpdateProductRequest>(API_URLS.PRODUCTS.UPDATE(id), {
         method: "PATCH",
         data,
-        headers: {
-            "x-mock-failure": "true",
-        },
+        // headers: {
+        //     "x-mock-failure": "true",
+        // },
     });
 
 export const deleteProduct: DeleteProductService = ({ id }) =>
@@ -50,5 +50,8 @@ export const deleteProduct: DeleteProductService = ({ id }) =>
         API_URLS.PRODUCTS.DELETE(id),
         {
             method: "DELETE",
+            // headers: {
+            //     "x-mock-failure": "true",
+            // },
         },
     );
