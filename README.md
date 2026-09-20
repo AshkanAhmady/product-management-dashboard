@@ -153,7 +153,7 @@ npm install -g pnpm
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/AshkanAhmady/product-management-dashboard.git
 cd product-management-dashboard
 ```
 
@@ -765,7 +765,6 @@ Given additional development time, the following improvements would be considere
 - Cache mutation logic extracted into dedicated reusable hooks/utilities
 - Improved observability and logging
 - Additional responsive UI refinements
-- Dark mode support
 
 ---
 
